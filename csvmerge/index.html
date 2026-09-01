@@ -1,0 +1,375 @@
+<!doctype html>
+<html lang="fr"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Fusion CSV — fusionner, nettoyer et dédupliquer des CSV/Excel dans le navigateur, gratuitement</title>
+<meta name="description" content="Fusionnez des dizaines de CSV et fichiers Excel en un seul, supprimez les doublons, harmonisez les colonnes, normalisez les dates et les nombres. 100 % dans votre navigateur : vos fichiers ne quittent jamais votre machine. Gratuit, sans inscription.">
+<style>
+:root{--bg:#f6f7fb;--ink:#0e1526;--mut:#5c6884;--line:#e3e7f0;--acc:#0e7c66;--ok:#0a9d6b;--r:12px}
+*{box-sizing:border-box}body{margin:0;font:15px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink)}
+.wrap{max-width:1320px;margin:0 auto;padding:16px}
+header{display:flex;align-items:center;gap:14px;padding:12px 16px;background:#fff;border:1px solid var(--line);border-radius:var(--r)}
+header b{font-size:17px;letter-spacing:-.01em}
+header .sub{color:var(--mut);font-size:13px}
+header nav{margin-left:auto;display:flex;gap:8px;align-items:center}
+.grid{display:grid;grid-template-columns:300px minmax(0,1fr) 300px;gap:14px;margin-top:14px;align-items:start}
+@media(max-width:1150px){.grid{grid-template-columns:1fr}}
+.card{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:16px}
+h2{font-size:10.5px;text-transform:uppercase;letter-spacing:.09em;color:var(--mut);margin:20px 0 8px}h2:first-child{margin-top:0}
+.lbl{font-size:11.5px;font-weight:650;color:var(--mut);display:block;margin-bottom:4px}
+.in,select{width:100%;font:inherit;padding:8px 10px;border:1px solid var(--line);border-radius:9px;background:#fff}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ck{display:flex;gap:8px;align-items:flex-start;font-size:13px;margin:7px 0;cursor:pointer}
+.ck input{margin-top:3px}
+.drop{border:2px dashed #c6cfe2;border-radius:var(--r);padding:26px;text-align:center;background:#fff;cursor:pointer}
+.drop.on{border-color:var(--acc);background:#eefbf7}
+.btn{font:inherit;font-weight:700;border:1px solid var(--line);background:#fff;border-radius:10px;padding:9px 15px;cursor:pointer}
+.btn.p{background:var(--acc);border-color:var(--acc);color:#fff}.btn.p:hover{filter:brightness(1.08)}
+.btn.s{padding:5px 10px;font-size:12.5px;border-radius:8px}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+th,td{padding:6px 8px;border-bottom:1px solid #f0f2f7;text-align:left;white-space:nowrap;max-width:230px;overflow:hidden;text-overflow:ellipsis}
+th{background:#fafbfe;font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--mut);position:sticky;top:0;z-index:2}
+.sc{max-height:60vh;overflow:auto;border:1px solid var(--line);border-radius:9px}
+.flist li{display:flex;gap:8px;align-items:center;padding:6px 0;border-bottom:1px solid #f3f5fa;list-style:none;font-size:13px}
+.flist{padding:0;margin:0} .flist b{flex:1;overflow:hidden;text-overflow:ellipsis;font-weight:600}
+.stat{display:flex;justify-content:space-between;padding:5px 0;font-size:13px;border-bottom:1px dashed #eef1f7}
+.stat b{font-variant-numeric:tabular-nums}
+.tag{font-size:10.5px;background:#eef2ff;color:#3730a3;padding:2px 7px;border-radius:99px;font-weight:700}
+.note{font-size:12px;color:var(--mut);line-height:1.5;margin-top:10px}
+.pro{background:linear-gradient(180deg,#fff,#f4fbf9);border:1px solid #cdefe5;border-radius:var(--r);padding:14px;margin-top:14px;font-size:13px}
+.pro b{display:block;margin-bottom:4px}
+a{color:var(--acc)}
+@media(max-width:1150px){.grid{grid-template-columns:1fr}.card{order:2}.card:first-child{order:1}}
+</style></head><body>
+<header>
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="2.5" y="4" width="8" height="16" rx="1.6" stroke="#0e7c66" stroke-width="1.6"/><rect x="13.5" y="4" width="8" height="16" rx="1.6" stroke="#0e7c66" stroke-width="1.6"/><path d="M10.5 12h3" stroke="#0e7c66" stroke-width="1.6"/></svg>
+  <div><b>Fusion CSV</b> <span class="sub">— fusionner · nettoyer · dédupliquer. Vos fichiers ne quittent jamais votre ordinateur.</span></div>
+  <nav><button class="btn s" id="helpBtn">Aide</button><a class="btn s p" href="../fusion-csv-cli.html">Version CLI (batch) — 15 €</a></nav>
+</header>
+
+<div class="wrap"><div class="grid">
+
+  <!-- LEFT -->
+  <div class="card">
+    <h2>1 · Fichiers</h2>
+    <div class="drop" id="drop">
+      <b>Déposez vos CSV / TSV / TXT</b>
+      <div class="note">ou cliquez pour choisir · plusieurs fichiers acceptés · xlsx : passez par « Import Excel »</div>
+      <input type="file" id="file" multiple accept=".csv,.tsv,.txt" hidden>
+    </div>
+    <ul class="flist" id="flist"></ul>
+    <div class="row" style="margin-top:10px">
+      <button class="btn s" id="pasteBtn">Coller des données</button>
+      <button class="btn s" id="clearBtn">Tout vider</button>
+    </div>
+
+    <h2>2 · Lecture</h2>
+    <label class="lbl">Séparateur</label>
+    <select id="delim"><option value="auto">Détection automatique</option><option value=",">virgule ,</option><option value=";">point-virgule ;</option><option value="&#9;">tabulation</option><option value="|">pipe |</option></select>
+    <label class="lbl" style="margin-top:8px">Encodage</label>
+    <select id="enc"><option value="auto">Détection auto (UTF-8 / UTF-8 BOM / Latin-1)</option><option value="utf-8">UTF-8</option><option value="windows-1252">Windows-1252 (Latin-1)</option><option value="utf-16le">UTF-16 LE</option></select>
+    <label class="ck"><input type="checkbox" id="hasHeader" checked> <span>La 1<sup>re</sup> ligne est l'en-tête</span></label>
+    <label class="ck"><input type="checkbox" id="quote" checked> <span>Gérer les guillemets ("…") et retours à la ligne internes</span></label>
+
+    <h2>3 · Colonnes</h2>
+    <div id="colBox" class="note">Chargez un fichier pour choisir les colonnes.</div>
+  </div>
+
+  <!-- CENTER -->
+  <div class="card">
+    <h2>Résultat <span class="tag" id="badge">0 ligne</span></h2>
+    <div class="sc"><table id="tbl"><thead></thead><tbody></tbody></table></div>
+    <div class="row" style="margin-top:12px">
+      <div><button class="btn p" id="run">⟳ Appliquer</button>
+        <button class="btn" id="dl">⭳ Télécharger le CSV</button>
+        <button class="btn s" id="dlJson">JSON</button>
+        <button class="btn s" id="dlXls">Excel (.xls)</button></div>
+      <div style="text-align:right"><button class="btn s" id="copyBtn">Copier</button>
+        <span class="note" id="time"></span></div>
+    </div>
+    <div class="pro">
+      <b>Besoin de faire ça 200 fois par mois&nbsp;?</b>
+      Le <a href="../fusion-csv-cli.html"><b>CLI <code>fusion</code></b></a> lit un dossier entier, applique exactement les mêmes règles, tourne
+      en tâche planifiée ou dans un script, et sort 20 000 lignes en 1 seconde. 15 €, licence à vie,
+      fonctionne sans internet — <i>pensé pour les gens qui traitent des exports comptables, des fichiers de caisse ou des exports de CRM</i>.
+    </div>
+  </div>
+
+  <!-- RIGHT -->
+  <div class="card">
+    <h2>Nettoyage</h2>
+    <label class="ck"><input type="checkbox" id="trim" checked> <span>Couper les espaces et retirer les sauts de ligne</span></label>
+    <label class="ck"><input type="checkbox" id="nbsp"> <span>Normaliser espaces insécables &amp; accents (NFC)</span></label>
+    <label class="ck"><input type="checkbox" id="emptyRows" checked> <span>Supprimer les lignes entièrement vides</span></label>
+    <label class="ck"><input type="checkbox" id="dedup"> <span>Supprimer les doublons</span></label>
+    <label class="ck"><input type="checkbox" id="dedupKeep"> <span>Doublons : garder le dernier (sinon le premier)</span></label>
+    <label class="ck"><input type="checkbox" id="numnorm"> <span>Nombres : <code>1 234,56</code> → <code>1234.56</code></span></label>
+    <label class="ck"><input type="checkbox" id="datnorm"> <span>Dates → ISO <code>AAAA-MM-JJ</code></span></label>
+    <label class="ck"><input type="checkbox" id="lowerHeader"> <span>En-têtes en minuscules + sans accents (jointures faciles)</span></label>
+    <label class="ck"><input type="checkbox" id="addSource"> <span>Ajouter la colonne <code>_source</code> (nom du fichier)</span></label>
+
+    <h2>Fusion</h2>
+    <label class="lbl">Mode</label>
+    <select id="mode"><option value="union">Union — toutes les colonnes (union des en-têtes)</option>
+      <option value="intersect">Intersection — colonnes communes uniquement</option>
+      <option value="first">Garder les colonnes du 1<sup>er</sup> fichier</option>
+      <option value="stack">Empiler sans toucher aux en-têtes (rapport identiques)</option></select>
+    <label class="lbl" style="margin-top:8px">Clé de jointure (optionnel)</label>
+    <select id="key"><option value="">— aucune —</option></select>
+    <label class="ck"><input type="checkbox" id="sort"> <span>Trier par colonne</span></label>
+    <select id="sortCol"><option>—</option></select>
+    <div class="row" style="margin-top:8px"><div><label class="lbl">Décimale de sortie</label>
+      <select id="outDec"><option value="dot">point (1234.56)</option><option value="comma">virgule (1234,56)</option></select></div>
+      <div><label class="lbl">Séparateur de sortie</label>
+      <select id="outDelim"><option value=";">; (Excel FR)</option><option value=",">,</option><option value="&#9;">tab</option></select></div></div>
+    <label class="ck"><input type="checkbox" id="bom" checked> <span>Écrire l'UTF-8 BOM (sinon Excel casse les accents)</span></label>
+
+    <h2>Stats</h2>
+    <div id="stats" class="note">—</div>
+  </div>
+</div></div>
+
+<script>
+/* =======================================================================
+   csvmerge — parser CSV RFC4180 + nettoyage + fusion. Sans dépendance.
+   ======================================================================= */
+var files=[], headers=[], rows=[], out={headers:[],rows:[]}, NAME="";
+
+/* ---- parsing (gère guillemets, \n dans les champs, BOM, \\) ---- */
+function parse(text, delim, quoted){
+  if(text.charCodeAt(0)===0xFEFF) text=text.slice(1);
+  if(!quoted) return text.replace(/\r\n|\r/g,"\n").split("\n").map(function(l){return l.split(delim);});
+  var out=[],row=[],f="",i=0,n=text.length,c,inQ=false;
+  while(i<n){ c=text[i];
+    if(inQ){ if(c==='"'){ if(text[i+1]==='"'){f+='"';i+=2;continue;} inQ=false;i++;continue; } f+=c;i++;continue; }
+    if(c==='"'){inQ=true;i++;continue;}
+    if(c===delim){row.push(f);f="";i++;continue;}
+    if(c==="\n"||c==="\r"){ if(c==="\r"&&text[i+1]==="\n")i++; row.push(f);f="";out.push(row);row=[];i++;continue;}
+    f+=c;i++; }
+  if(f.length||row.length){row.push(f);out.push(row);} 
+  return out;
+}
+function guessDelim(text){
+  /* On ne dissocie que sur la PREMIÈRE ligne (l'en-tête), et hors champs entre guillemets :
+     sinon un tableau de données contenant des "|" (markdown, logs) ou des ; dans une
+     cellule « ville; pays » fait gagner le mauvais séparateur. */
+  var head=String(text==null?"":text).split(/\r?\n/,1)[0].replace(/^\uFEFF/,"");
+  head=head.replace(/"[^"]*"/g,"");
+  var cand=["\t",";",",","|"],best="",bn=0,counts={};
+  cand.forEach(function(d){ var n=head.split(d).length-1; counts[d]=n;
+    if(n>bn){bn=n;best=d;} });
+  if(!bn){ for(var i=0;i<cand.length;i++){ if(counts[cand[i]]){best=cand[i];break;} } }
+  /* un seul type de séparateur, une seule fois ? « a;b » et « a,b » sont aussi bien
+     du markdown ou une phrase : on garde ; par défaut, c'est ce qu'Excel FR attend. */
+  return best||";";
+}
+function detectEnc(buf, forced){
+  var u8=new Uint8Array(buf);
+  if(forced==="utf-16le") return new TextDecoder("utf-16le").decode(u8);
+  if(forced&&forced!=="auto") return new TextDecoder(forced).decode(u8);
+  if(u8[0]===0xEF&&u8[1]===0xBB&&u8[2]===0xBF) return new TextDecoder("utf-8").decode(u8);
+  try{ new TextDecoder("utf-8",{fatal:true}).decode(u8); return new TextDecoder("utf-8").decode(u8);}
+  catch(e){ return new TextDecoder("windows-1252").decode(u8);} }
+function colName(s){ s=String(s).replace(/^\uFEFF/,"").trim();
+  return s.normalize?(s.normalize("NFC")):s; }
+function normHeader(s){ return colName(s).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+  .replace(/[^a-z0-9]+/g,"_").replace(/^_|_$/g,"")||"col"; }
+/* ATTENTION : cette fonction doit rendre EXACTEMENT ce que rend le CLI (fusion.py), sinon la
+   page « gratuit » et le produit payé fabriquent deux fichiers différents — le pire résultat
+   possible pour un outil de rapprochement comptable. Les deux règles ci-dessous viennent du CLI :
+   1) l'échelle d'origine est conservée (99,90 → 99.90, jamais 99.9 : un centime qui disparaît
+      est un doute qui naît) ; 2) un zéro en tête n'est pas un nombre, c'est un code
+      (007 reste 007, sinon une clé de rapprochement est détruite en silence). */
+function numNorm(s){
+  if(!s||!/^-?[\d\s\u00a0.,]+$/.test(s))return s;
+  var core=s.replace(/^[-+]/,"");
+  if(/^0\d/.test(core))return s;                      // code, pas un nombre
+  var t=s.replace(/[\s\u00a0]/g,"");
+  if(/,\d{1,2}$/.test(t)&&/\d\.\d/.test(t)) t=t.replace(/\./g,"").replace(",",".");
+  else if(/,/.test(t)&&!/\.\d*$/.test(t)) t=t.replace(",",".");
+  else if(/,/.test(t)) t=t.replace(/,/g,".");
+  var m=t.match(/^[+-]?\d+(?:[.,]\d+)?/);
+  if(!m)return s;
+  var sc=(m[0].split(/[.,]/)[1]||"").length;
+  var n=parseFloat(m[0].replace(",",".")); if(isNaN(n))return s;
+  /* PAS de « (450,00) » → -450 ici : le CLI ne le fait qu'avec --paren, et l'outil web
+     n'a pas cette option. Mieux vaut une règle en moins, identique des deux côtés,
+     qu'une règle en plus dans le gratuit et pas dans le payant. */
+  return (sc?n.toFixed(sc):String(n));}
+/* Règles alignées sur le CLI (fusion.py) : JOUR D'ABORD (convention française), séparateurs
+   / - . ou espace, et une date IMPOSSIBLE n'est pas devinée — 31/02/2026 reste du texte.
+   Les jours/mois sont validés (29/02 n'existe que les bissextiles). Un outil qui invente une
+   date fait plus de dégâts qu'un outil qui en laisse une en l'état. */
+function dateNorm(s){ s=String(s).trim();
+  var iso=s.match(/^(\d{4})-(\d{2})-(\d{2})/); if(iso)return iso[0].slice(0,10);
+  var m=s.match(/^(\d{1,2})[\/.\-\s](\d{1,2})[\/.\-\s](\d{2,4})$/);
+  if(m){ var a=+m[1],b=+m[2],y=+m[3]; if(y<100)y+=2000;
+    var d=a,mo=b;                          // a>12 => forcément le jour ; sinon jour quand même (FR)
+    if(mo<1||mo>12||d<1||d>31) return s;
+    var dim=[31,((y%4===0&&y%100!==0)||y%400===0)?29:28,31,30,31,30,31,31,30,31,30,31];
+    if(d>dim[mo-1]) return s;               // 31/02, 30/02, 31/04… rejetés, pas corrigés
+    return y+"-"+("0"+mo).slice(-2)+"-"+("0"+d).slice(-2); }
+  var iso=s.match(/^(\d{4})-(\d{2})-(\d{2})/); if(iso) return iso[0];
+  return s;}
+function clean(v){
+  if(v==null)v=""; v=String(v);
+  if(ck("trim")) v=v.replace(/\r?\n/g," ").trim();
+  if(ck("nbsp")){ v=v.replace(/\u00a0/g," "); if(v.normalize) v=v.normalize("NFC"); }
+  if(ck("numnorm")) v=numNorm(v);
+  if(ck("datnorm")) v=dateNorm(v);
+  return v;}
+
+function readFile(f){ return new Promise(function(res){
+  var fr=new FileReader(); fr.onload=function(){ res({name:f.name,text:detectEnc(fr.result,vl("enc"))}); };
+  fr.readAsArrayBuffer(f);});}
+
+function refreshList(){
+  $("flist").innerHTML=files.map(function(f,i){
+    return '<li><b title="'+esc(f.name)+'">'+esc(f.name)+'</b><span class="note">'+f.rows.length+'</span>'+
+    '<button class="btn s" data-x="'+i+'">×</button></li>';}).join("");
+  $$("#flist [data-x]").forEach(function(b){b.onclick=function(){files.splice(+b.dataset.x,1);refreshList();};});
+}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});}
+function $(id){return document.getElementById(id);}
+function $$(sel,root){return Array.prototype.slice.call((root||document).querySelectorAll(sel));}
+function ck(id){var e=$(id);return !!(e&&e.checked);}
+function vl(id){var e=$(id);return e?e.value:"";}
+
+/* ---- parse all files into frames ---- */
+function analyze(){
+  return Promise.all(files.map(function(f){
+    var head=(f.text.split(/\r?\n/)[0]||"");
+    var d=vl("delim")==="auto"?guessDelim(head):vl("delim");
+    var g=parse(f.text,d,ck("quote"));
+    if(!g.length)return{name:f.name,headers:[],rows:[]};
+    var hs=ck("hasHeader")?g.shift().map(colName):g[0].map(function(_,i){return "col"+(i+1);});
+    if(!ck("hasHeader"))g.shift();
+    if(ck("lowerHeader")) hs=hs.map(normHeader);
+    // pad
+    var w=hs.length; g.forEach(function(r){while(r.length<w)r.push("");if(r.length>w)hs=hs.concat(r.slice(w).map(function(_,i){return "extra"+(hs.length+i);})),w=hs.length;});
+    return {name:f.name,headers:hs.map(String),rows:g.map(function(r){return r.map(function(v){return v==null?"":String(v);});})};
+  })).then(function(frames){
+    return frames;});}
+
+function buildHeaders(frames){
+  var mode=vl("mode"),hs=[];
+  if(mode==="stack"){ frames.forEach(function(f){f.headers.forEach(function(h){hs.push(h);});}); }
+  else if(mode==="first"){ hs=frames[0]?frames[0].headers.slice():[]; }
+  else if(mode==="intersect"){ hs=frames.length?frames[0].headers.filter(function(h){return frames.every(function(f){return f.headers.indexOf(h)>=0;});}):[]; }
+  else { frames.forEach(function(f){f.headers.forEach(function(h){if(hs.indexOf(h)<0)hs.push(h);});}); }
+  if(ck("addSource")) hs=hs.concat(["_source"]);
+  return hs;}
+
+function run(){
+  if(!files.length){alert("Ajoutez au moins un fichier.");return;}
+  var t0=performance.now();
+  analyze().then(function(frames){
+    var hs=buildHeaders(frames), mode=vl("mode"), keepDup=!ck("dedup"), keepLast=ck("dedupKeep");
+    var seen={}, stats={in:0,empty:0,dup:0,fixed:0};
+    var acc=[];
+    frames.forEach(function(f){
+      var map=hs.map(function(h){ return f.headers.indexOf(h); });
+      f.rows.forEach(function(r){
+        stats.in++;
+        var o=map.map(function(i){ return i<0?"":clean(r[i]); });
+        if(mode==="stack") o=hs.slice(0,f.headers.length).map(function(_,i){return clean(r[i]);});
+        if(ck("addSource")) o.push(f.name);
+        if(ck("emptyRows") && o.every(function(v){return v===""||v==null;})){stats.empty++;return;}
+        var key=o.join("\u0001");
+        if(!keepDup){ if(seen[key]!=null){ stats.dup++; if(keepLast){acc[seen[key]]=o;} return; } seen[key]=acc.length; }
+        acc.push(o);});});
+    if(ck("sort") && vl("sortCol")!=="—"){
+      var si=hs.indexOf(vl("sortCol"));
+      acc.sort(function(a,b){
+        var x=a[si]||"",y=b[si]||"",nx=parseFloat(x),ny=parseFloat(y);
+        if(!isNaN(nx)&&!isNaN(ny)&&/^-?[\d., ]+$/.test(x)&&/^-?[\d., ]+$/.test(y))return nx-ny;
+        return String(x).localeCompare(String(y),"fr",{numeric:true,sensitivity:"base"});
+      });
+    }
+    out={headers:hs,rows:acc};
+    render();
+    var dt=performance.now()-t0;
+    $("time").textContent=dt.toFixed(0)+" ms";
+    $("stats").innerHTML='<div class="stat"><span>Lignes lues</span><b>'+stats.in+'</b></div>'+
+      '<div class="stat"><span>Lignes vides retirées</span><b>'+stats.empty+'</b></div>'+
+      '<div class="stat"><span>Doublons retirés</span><b>'+stats.dup+'</b></div>'+
+      '<div class="stat"><span>Résultat</span><b>'+acc.length+' × '+hs.length+'</b></div>'+
+      '<div class="note">Fichiers fusionnés : '+frames.map(function(f){return esc(f.name)+" ("+f.rows.length+")";}).join(", ")+'</div>';
+  }).catch(function(e){alert("Erreur : "+e.message);console.error(e);});
+}
+function render(){
+  $("badge").textContent=out.rows.length.toLocaleString("fr-FR")+" ligne"+(out.rows.length>1?"s":"");
+  $("tbl").querySelector("thead").innerHTML="<tr>"+out.headers.map(function(h){return "<th>"+esc(h)+"</th>";}).join("")+"</tr>";
+  var max=Math.min(out.rows.length,300);
+  $("tbl").querySelector("tbody").innerHTML=out.rows.slice(0,max).map(function(r){
+    return "<tr>"+r.map(function(v){return "<td title='"+esc(String(v)).replace(/'/g,"&#39;")+"'>"+esc(String(v))+"</td>";}).join("")+"</tr>";}).join("")
+    +(out.rows.length>max?'<tr><td colspan="'+out.headers.length+'" style="color:#5c6884">… '+(out.rows.length-max)+' lignes supplémentaires dans le téléchargement</td></tr>':"");
+  var opt="<option>—</option>"+out.headers.map(function(h){return "<option>"+esc(h)+"</option>";}).join("");
+  $("sortCol").innerHTML=opt; $("key").innerHTML="<option value=''>— aucune —</option>"+out.headers.map(function(h){return "<option>"+esc(h)+"</option>";}).join("");
+}
+function serialize(){
+  var d=vl("outDelim"), dec=vl("outDec");
+  function cell(v){ v=String(v==null?"":v);
+    if(dec==="comma"&&/^-?\d+(\.\d+)?$/.test(v)) v=v.replace(".",",");
+    if(v.indexOf(d)>=0||/["\n]/.test(v)) v='"'+v.replace(/"/g,'""')+'"';
+    return v;}
+  var lines=[out.headers.map(cell).join(d)];
+  out.rows.forEach(function(r){lines.push(r.map(cell).join(d));});
+  return lines.join("\r\n");
+}
+function dl(name,text,mime){ var pre=ck("bom")?"\uFEFF":"";
+  var b=new Blob([pre+text],{type:mime||"text/csv;charset=utf-8"}),a=document.createElement("a");
+  a.href=URL.createObjectURL(b);a.download=name;document.body.appendChild(a);a.click();
+  setTimeout(function(){URL.revokeObjectURL(a.href);a.remove();},400);}
+
+/* ---- wiring ---- */
+["delim","enc","mode","hasHeader","quote","trim","nbsp","emptyRows","dedup","dedupKeep","numnorm","datnorm","lowerHeader","addSource","outDec","outDelim","bom","sort"].forEach(function(id){
+  var e=document.getElementById(id); if(e) e.addEventListener("change",function(){ if(files.length) run(); }); });
+document.getElementById("run").onclick=run;
+document.getElementById("dl").onclick=function(){ if(!out.rows.length){alert("Rien à télécharger.");return;}
+  dl("fusion-"+new Date().toISOString().slice(0,10)+".csv",serialize());};
+document.getElementById("dlJson").onclick=function(){ if(!out.rows.length)return;
+  dl("fusion.json",JSON.stringify(out.rows.map(function(r){var o={};out.headers.forEach(function(h,i){o[h]=r[i];});return o;}),null,1),"application/json");};
+document.getElementById("dlXls").onclick=function(){ if(!out.rows.length)return;
+  var t="<table><tr>"+out.headers.map(function(h){return "<th>"+esc(h)+"</th>";}).join("")+"</tr>"+
+    out.rows.slice(0,65000).map(function(r){return "<tr>"+r.map(function(v){return "<td>"+esc(String(v))+"</td>";}).join("")+"</tr>";}).join("")+"</table>";
+  dl("fusion.xls",'<html xmlns:x="urn:schemas-microsoft-com:office:excel"><head><meta charset="utf-8"></head><body>'+t+"</body></html>","application/vnd.ms-excel");};
+document.getElementById("copyBtn").onclick=function(){ if(!out.rows.length)return;
+  var s=serialize(); (navigator.clipboard?navigator.clipboard.writeText(s):Promise.reject()).then(function(){toast("Copié");},function(){
+    var t=document.createElement("textarea");t.value=s;document.body.appendChild(t);t.select();document.execCommand("copy");t.remove();toast("Copié");});};
+document.getElementById("clearBtn").onclick=function(){files=[];out={headers:[],rows:[]};refreshList();render();$("stats").textContent="—";};
+document.getElementById("pasteBtn").onclick=function(){
+  var s=prompt("Collez vos lignes (CSV ou TSV) :"); if(!s)return;
+  files.push({name:"collé",text:s}); refreshList(); run();};
+document.getElementById("helpBtn").onclick=function(){
+  alert("Fusion CSV — mode d'emploi\n\n"+
+  "1. Déposez vos fichiers. Le séparateur et l'encodage sont devinés ; corrigez si besoin.\n"+
+  "2. Choisissez le mode de fusion : « Union »=additionne les colonnes différentes, « Intersection »=garde le commun, « Empiler »=à plat si les fichiers ont la même structure.\n"+
+  "3. Cochez le nettoyage : doublons, lignes vides, nombres et dates.\n"+
+  "4. Téléchargez. L'option BOM est laissée cochée pour qu'Excel ouvre les accents correctement.\n\n"+
+  "Confidentialité : aucun fichier n'est envoyé. Débranchez le réseau pour vérifier.\n"+
+  "Volume : jusqu'à ~200 000 lignes dans un onglet récent. Au-delà, ou pour un dossier entier : utilisez le CLI.");};
+var dp=$("drop");
+dp.onclick=function(){$("file").click();};
+["dragenter","dragover"].forEach(function(ev){dp.addEventListener(ev,function(e){e.preventDefault();dp.classList.add("on");});});
+["dragleave","drop"].forEach(function(ev){dp.addEventListener(ev,function(e){e.preventDefault();dp.classList.remove("on");});});
+dp.addEventListener("drop",function(e){ add(e.dataTransfer.files); });
+$("file").addEventListener("change",function(e){add(e.target.files);});
+function add(list){
+  Array.prototype.slice.call(list).forEach(function(f){
+    if(/\.xlsx?$/i.test(f.name)){ alert("Excel : enregistrez-le d'abord en CSV (Fichier → Enregistrer sous → CSV), ou utilisez le CLI, qui lit les .xlsx directement (page « Version CLI » en haut de l'écran)."); return; }
+    readFile(f).then(function(r){ files.push({name:r.name,text:r.text}); refreshList(); run(); });
+  });
+}
+function toast(m){ var t=document.createElement("div"); t.textContent=m;
+  t.style.cssText="position:fixed;left:50%;bottom:26px;transform:translateX(-50%);background:#0e1526;color:#fff;padding:10px 20px;border-radius:10px;font:600 13px system-ui;z-index:99";
+  document.body.appendChild(t); setTimeout(function(){t.remove();},1800);}
+window.__test={parse:parse,guessDelim:guessDelim,numNorm:numNorm,dateNorm:dateNorm,normHeader:normHeader,serialize:serialize,setOut:function(o){out=o;}};
+document.addEventListener("keydown",function(e){ if((e.metaKey||e.ctrlKey)&&e.key==="Enter"){e.preventDefault();run();} });
+</script>
+<footer style="max-width:1000px;margin:26px auto;padding:0 22px;color:#5c6884;font-size:13.5px">
+<b>Fusion CSV</b> — un outil autonome, sans serveur, sans compte, sans mesure d'audience. Vos fichiers sont lus en mémoire et repartent tels quels.
+Toutes les opérations tournent dans votre navigateur : ouvrez l'outil, coupez le wifi, rechargez — il fonctionne encore.
+<div style="margin-top:14px">Un fichier qui casse la jointure sur une colonne « Ville » avec un espace en trop, un « 1 234,56 » qu'Excel lit comme du texte,
+un CSV en Latin-1 qui remplace les accents par des losanges : c'est exactement pour ça que cet outil existe, et c'est exactement ce que le CLI fait en lot.</div>
+</footer>
+</body></html>

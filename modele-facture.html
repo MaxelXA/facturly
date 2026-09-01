@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="fr"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Modèle de facture freelance à télécharger (TXT / HTML / CSV) — Tunisie, Maroc, Algérie</title>
+<meta name="description" content="Modèle de facture gratuit à copier-coller, avec les mentions légales tunisiennes, marocaines et algériennes déjà placées. Formats HTML imprimable, texte brut et CSV. 100% gratuit, sans email, sans inscription.">
+<link rel="canonical" href="https://facturly.app/modele-facture.html">
+<style>
+body{font:17px/1.7 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:#101828;margin:0;background:#fff}
+.wrap{max-width:800px;margin:0 auto;padding:0 22px}
+h1{font-size:32px;line-height:1.2;letter-spacing:-.02em;margin:40px 0 10px}
+h2{font-size:22px;margin:36px 0 10px}p{margin:0 0 14px}.muted{color:#667085;font-size:15px}a{color:#2f5cff}
+.box{background:#f5f7fc;border:1px solid #e4e8f2;border-radius:14px;padding:18px;margin:20px 0}
+pre{background:#0b1020;color:#dbe3f5;padding:16px;border-radius:12px;overflow:auto;font:13px/1.55 ui-monospace,Menlo,monospace}
+.btn{display:inline-block;background:#2f5cff;color:#fff;font-weight:700;padding:12px 22px;border-radius:11px;text-decoration:none;border:0;cursor:pointer;font-size:15px}
+.btn.g{background:#0b1020}nav{border-bottom:1px solid #eaecf0;padding:14px 0;font-size:15px;font-weight:600}nav a{text-decoration:none;margin-right:16px}
+.h{font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#98a2b3}
+footer{border-top:1px solid #eaecf0;margin-top:50px;padding:24px 0 50px;color:#667085;font-size:14px}
+.gate{display:grid;gap:12px;grid-template-columns:1fr 1fr}@media(max-width:640px){.gate{grid-template-columns:1fr}}
+</style>
+<script>
+const TN = `FACTURE  F-2026-0001
+------------------------------------------------------------
+EMETTEUR
+[Nom / Raison sociale]
+[Adresse]                     [CP] [Ville], Tunisie
+Matricule fiscal : [13 car.]  Tel : [+216 ...]
+Email : [...]                 Site : [...]
+
+CLIENT
+[Raison sociale du client]
+[Adresse complete]
+Matricule fiscal du client : [...]
+
+Date d'emission : 2026-08-28    Echeance : 2026-09-27
+------------------------------------------------------------
+DESIGNATION                        QTE   P.U. HT        MONTANT HT
+Développement web / app            40    55,000             2 200,000
+Maintenance & hebergement           1   300,000               300,000
+------------------------------------------------------------
+TOTAL HT                                               2 500,000 DT
+TVA 19 %    [ou "TVA non applicable" / "Export 0 %"]     475,000 DT
+TIMBRE / TAXES                                                 0,000 DT
+NET A PAYER                                                2 975,000 DT
+------------------------------------------------------------
+REGLEMENT
+Banque : [...]   RIB : [...]   Au nom de : [...]
+Payoneer / Wise : [...]
+
+Mentions : Numérotation séquentielle - Conservation 10 ans.
+TVA non applicable (regime forfaitaire) OU Exportation de services, TVA 0 %.
+Facturly · facturly.app`;
+
+const MA = `FACTURE N° F-2026-0001
+------------------------------------------------------------
+Fournisseur : [Raison sociale] - [Adresse] - [Ville]
+IF : [...]   RC : [...]   ICE : [...]   CNSS : [...]
+Client    : [Raison sociale] - [Adresse] - ICE : [...]
+Date : 2026-08-28
+------------------------------------------------------------
+Designation                        QTE   P.U. HT     Total HT
+Developpement web                   40    550,000     22 000,000
+Maintenance                          1  3 000,000      3 000,000
+------------------------------------------------------------
+Total HT ......................................... 25 000,000 DH
+TVA 20 % .......................................... 5 000,000 DH
+TTC ............................................... 30 000,000 DH
+------------------------------------------------------------
+TVA sur les services : exigibilite a l'encaissement.
+Export de services : TVA 0 % - a justifier par la preuve de paiement.
+Facturly · facturly.app`;
+
+function dl(){
+  const mk=(n,c)=>{const b=new Blob([c],{type:"text/plain;charset=utf-8"});const a=document.createElement("a");
+    a.href=URL.createObjectURL(b);a.download=n;a.click();};
+  mk("modele-facture-tunisie.txt",TN);
+  setTimeout(()=>{const rows="Designation;Qte;Prix unitaire HT;TVA %;Total HT\nDeveloppement web;40;55;19;2200\nMaintenance;1;300;19;300\n";
+    const b=new Blob(["\ufeff"+rows],{type:"text/csv;charset=utf-8"});const a=document.createElement("a");
+    a.href=URL.createObjectURL(b);a.download="facture-lignes.csv";a.click();},120);
+}
+function cp(){navigator.clipboard.writeText(TN).then(()=>alert("Copié ✓"));}</script>
+</head><body>
+<nav><div class="wrap"><strong>Facturly</strong><a href="app/">Générateur</a><a href="facture-freelance-tunisie.html">Guide TN</a><a href="pro.html">Pro</a></div></nav>
+<div class="wrap">
+<p class="h">Téléchargement · gratuit · sans email</p>
+<h1>Modèle de facture pour freelance — prêt à copier, avec les mentions déjà à la bonne place</h1>
+<p class="muted">Trois blocs : Tunisie, et la structure marocaine/algérienne équivalente. Le but n'est pas le joli PDF, c'est que rien ne manque au contrôle.</p>
+
+<div class="box" style="background:#f0fdf6;border-color:#bbf7d0;display:flex;gap:14px;align-items:center;flex-wrap:wrap">
+  <div style="flex:1;min-width:230px"><b>Préféreriez-vous que ça se calcule tout seul&nbsp;?</b>
+  <div class="muted">TVA, timbre, retenue, acompte, numérotation, PDF. 60 secondes, sans compte.</div></div>
+  <a class="btn" href="app/">Ouvrir le générateur</a>
+</div>
+
+<h2>Bloc Tunisie — à copier</h2>
+<button class="btn g" onclick="cp()">Copier le modèle</button>
+<button class="btn" style="margin-left:8px" onclick="dl()">Télécharger .txt + .csv</button>
+<pre id="tn">[le modèle s'affiche si le JavaScript est actif — sinon, copiez depuis le bouton ci-dessus après ouverture du fichier en local]</pre>
+
+<h2>Pourquoi ce format et pas un fichier Word</h2>
+<ul>
+<li><b>La numérotation séquentielle</b> est le premier réflexe du contrôleur. Un Word recopié avec « 0012 » modifié à la main finit toujours par faire un doublon.</li>
+<li><b>Le CSV des lignes</b> se recharge dans Excel/Sheets et se retrouve tel quel dans votre archive : le jour où il faut tout ressortir, vous ressortez un tableau, pas un souvenirs.</li>
+<li><b>Le texte brut</b> s'imprime depuis n'importe quel poste, y compris celui du client qui a un vieux Word sans police arabe.</li>
+</ul>
+
+<h2>Maroc / Algérie : ce qui change</h2>
+<div class="gate">
+<div class="box"><p class="h">Maroc</p><p style="margin:0">Ajoutez <b>IF, RC, ICE, CNSS</b> sur la facture. TVA services 20 %
+(mais <b>exigible à l'encaissement</b> — cela change votre trésorerie, pas seulement votre TVA). Export = 0 %.</p></div>
+<div class="box"><p class="h">Algérie</p><p style="margin:0"><b>NIF + NIS</b> obligatoires. Facturation en dinar pour le local.
+Timbre fiscal à prévoir sur certaines pièces. TVA 19 % / 9 %.</p></div>
+</div>
+
+<h2>Le CSV des lignes (celui que votre comptable aime)</h2>
+<pre>Designation;Qte;Prix unitaire HT;TVA %;Total HT
+Developpement web;40;55;19;2200
+Maintenance;1;300;19;300</pre>
+<p class="muted">Point-virgule parce qu'en français Excel sépare sur <code>;</code>. Enregistrez en <code>UTF-8 BOM</code> pour que les accents survivent.</p>
+
+<div class="box" style="text-align:center;background:#0b1020;border:0;color:#fff">
+<p class="h" style="color:#8fa0c9">Aller plus vite</p>
+<b style="font-size:20px">Facturly Pro — 29 €, à vie</b>
+<p style="margin:8px 0 16px;color:#b7c3de;font-size:15px">Devis → facture en un clic, relances rédigées, export iCSV, sans la mention Facturly.</p>
+<a class="btn" href="pro.html">Voir Pro</a>
+</div>
+</div>
+<footer><div class="wrap">Modèle librement copiable, sans licence à acheter pour l'utiliser. Facturly est un outil d'édition — pas un conseil fiscal.
+<span class="muted"><a href="facture-freelance-tunisie.html">Guide complet</a> · <a href="app/">Générateur</a></span></div></footer>
+<script>document.getElementById("tn").textContent=TN;</script>
+</body></html>

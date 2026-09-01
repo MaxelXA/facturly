@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="fr" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Facturly — Générateur de factures & devis gratuit pour freelances (Tunisie / Maroc / Algérie / Égypte)</title>
+<meta name="description" content="Créez vos factures, devis et avoirs en PDF en 60 secondes. Gratuit, sans inscription, 100% dans votre navigateur. Présets fiscaux Tunisie, Maroc, Algérie, Égypte. Multilingue FR / AR (RTL) / EN. Vos données ne quittent jamais votre machine.">
+<meta name="keywords" content="générateur facture, facture freelance tunisie, modele facture, devis gratuit, facture auto entrepreneur, invoice generator arabic, فاتورة, TVA 19%">
+<meta name="robots" content="index,follow">
+<meta name="author" content="Majed Ben Mansour">
+<link rel="canonical" href="https://facturly.app/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Facturly — Factures & devis PDF gratuits pour freelances MAGhreb">
+<meta property="og:description" content="60 secondes, zéro inscription, zéro envoi de données. Présets fiscaux TN / MA / DZ / EG. FR · AR · EN.">
+<meta property="og:locale" content="fr_TN">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0f172a">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%230f172a'/><path d='M8 9h16M8 15h11M8 21h7' stroke='white' stroke-width='2.5' stroke-linecap='round'/></svg>">
+<link rel="stylesheet" href="style.css">
+<script type="application/ld+json">
+{
+  "@context":"https://schema.org",
+  "@type":"WebApplication",
+  "name":"Facturly",
+  "applicationCategory":"BusinessApplication",
+  "operatingSystem":"Any (browser)",
+  "inLanguage":["fr","ar","en"],
+  "offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"},
+  "featureList":["Factures, devis et avoirs en PDF","Présets fiscaux Tunisie/Maroc/Algérie/Égypte","Arabe RTL complet","Numérotation automatique","Calcul TVA/FODEC/timbre/retenu à la source","Stockage 100% local, hors-ligne","Lien de paiement"],
+  "description":"Générateur gratuit de factures et devis PDF pour indépendants, sans inscription, fonctionnant entièrement dans le navigateur."
+}
+</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+{"@type":"Question","name":"Ce générateur de facture est-il vraiment gratuit ?","acceptedAnswer":{"@type":"Answer","text":"Oui. Illimité en nombre de documents dans la version locale, sans compte, sans filigrane. Vos données sont stockées uniquement dans votre navigateur (localStorage) et rien n'est envoyé sur un serveur."}},
+{"@type":"Question","name":"Puis-je facturer un client étranger en devis ?","acceptedAnswer":{"@type":"Answer","text":"Oui. EUR, USD, GBP, TND, MAD, DZD, EGP sont disponibles, avec mention d'exportation de services et TVA à 0 % activable en un clic."}},
+{"@type":"Question","name":"Mes données fiscales sont-elles en sécurité ?","acceptedAnswer":{"@type":"Answer","text":"Le fichier HTML est autonome. Aucune requête réseau n'est émise après chargement. Vous pouvez l'utiliser hors-ligne et même sur une clé USB."}}]}
+</script>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <svg width="26" height="26" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#0f172a"/><path d="M8 9h16M8 15h11M8 21h7" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></svg>
+    <strong>Facturly</strong>
+    <span class="tag" id="planTag">Gratuit</span>
+  </div>
+  <nav class="tabs" role="tablist">
+    <button class="tab active" data-view="doc" role="tab">Document</button>
+    <button class="tab" data-view="profile" role="tab">Mon profil</button>
+    <button class="tab" data-view="archive" role="tab">Archive</button>
+    <button class="tab" data-view="pro" role="tab">Pro</button>
+  </nav>
+  <div class="topbar-right">
+    <select id="uiLang" class="mini" title="Interface language">
+      <option value="fr">FR</option><option value="ar">AR</option><option value="en">EN</option>
+    </select>
+    <button id="btnUpgrade" class="btn btn-accent btn-sm" data-t="upgrade">Passer Pro</button>
+  </div>
+</header>
+
+<main>
+
+<!-- ============================ DOC VIEW ============================ -->
+<section id="view-doc" class="view active">
+  <div class="layout">
+
+    <aside class="panel">
+      <h2 class="panel-title" data-t="docType">Type de document</h2>
+      <div class="seg" id="docTypeSeg">
+        <button data-type="facture" class="active" data-t="invoice">Facture</button>
+        <button data-type="devis" data-t="quote">Devis</button>
+        <button data-type="avoir" data-t="credit">Avoir</button>
+      </div>
+
+      <div class="row2">
+        <label class="field"><span data-t="number">Numéro</span><input id="docNumber" class="in" autocomplete="off"></label>
+        <label class="field"><span data-t="currency">Auto</span><input id="docSerie" class="in" value="F" autocomplete="off" title="Préfixe de numérotation"></label>
+      </div>
+      <div class="row2">
+        <label class="field"><span data-t="issueDate">Date d'émission</span><input type="date" id="docDate" class="in"></label>
+        <label class="field"><span data-t="dueDate">Échéance</span><input type="date" id="docDue" class="in"></label>
+      </div>
+
+      <h2 class="panel-title" data-t="country">Pays &amp; fiscalité</h2>
+      <select id="countrySel" class="in">
+        <option value="TN">🇹🇳 Tunisie</option>
+        <option value="MA">🇲🇦 Maroc</option>
+        <option value="DZ">🇩🇿 Algérie</option>
+        <option value="EG">🇪🇬 Égypte</option>
+        <option value="FR">🇫🇷 France</option>
+        <option value="BE">🇧🇪 Belgique</option>
+        <option value="AE">🇦🇪 Émirats arabes unis</option>
+        <option value="SA">🇸🇦 Arabie saoudite</option>
+        <option value="XX">🌍 Autre / export</option>
+      </select>
+      <div class="hint" id="countryHint"></div>
+
+      <label class="check"><input type="checkbox" id="vatApplied" checked> <span data-t="vatApplied">Assujetti à la TVA</span></label>
+      <div class="row2">
+        <label class="field"><span data-t="vatRate">Taux TVA (%)</span><input id="vatRate" class="in" type="number" step="0.5" value="19"></label>
+        <label class="field"><span data-t="currency">Devise</span><select id="currencySel" class="in"></select></label>
+      </div>
+      <label class="check"><input type="checkbox" id="exportZero"> <span data-t="exportZero">Export / TVA 0 % (client étranger)</span></label>
+      <label class="check"><input type="checkbox" id="withholding"> <span data-t="withholding">Retenue à la source</span></label>
+      <div class="row2">
+        <label class="field"><span data-t="whRate">Taux RAS (%)</span><input id="whRate" class="in" type="number" step="0.5" value="15"></label>
+        <label class="field"><span data-t="discount">Remise globale (%)</span><input id="discountRate" class="in" type="number" step="0.5" value="0"></label>
+      </div>
+      <div class="row2">
+        <label class="field"><span data-t="stamp">Timbre / taxes fixes</span><input id="stampDuty" class="in" type="number" step="0.1" value="0"></label>
+        <label class="field"><span data-t="paid">Acompte déjà payé</span><input id="paid" class="in" type="number" step="0.1" value="0"></label>
+      </div>
+
+      <h2 class="panel-title" data-t="extras">Options</h2>
+      <label class="check"><input type="checkbox" id="showLogo" checked> <span data-t="showLogo">Afficher le logo</span></label>
+      <label class="field"><span data-t="logo">Logo</span><input type="file" id="logoInput" accept="image/*" class="in-file"></label>
+      <label class="field"><span data-t="accent">Couleur</span><input type="color" id="accent" class="in-color" value="#0f172a"></label>
+      <label class="field"><span data-t="template">Modèle</span>
+        <select id="templateSel" class="in">
+          <option value="classic">Classic</option>
+          <option value="modern">Modern</option>
+          <option value="minimal">Minimal</option>
+        </select>
+      </label>
+      <div class="lockbar" data-pro-only>
+        <span data-t="proOnly">Modern &amp; Minimal · Relances · Multi-devises · Rappels = Pro</span>
+      </div>
+    </aside>
+
+    <div class="panel panel-main">
+      <div class="two-col">
+        <div>
+          <h2 class="panel-title" data-t="yourCo">Émetteur</h2>
+          <textarea id="sellerBlock" class="in in-area" rows="5" placeholder="Nom / Raison sociale&#10;Adresse&#10;Ville, Pays&#10;Matricule fiscal · MF&#10;email · téléphone"></textarea>
+        </div>
+        <div>
+          <h2 class="panel-title" data-t="client">Client</h2>
+          <textarea id="buyerBlock" class="in in-area" rows="5" placeholder="Raison sociale&#10;Adresse&#10;Ville, Pays&#10;Matricule / VAT&#10;email"></textarea>
+          <button id="btnPickClient" class="btn btn-ghost btn-xs" data-t="pickClient">Choisir depuis l'archive</button>
+        </div>
+      </div>
+
+      <div class="lines-head">
+        <h2 class="panel-title" data-t="lines">Lignes</h2>
+        <button id="btnAddLine" class="btn btn-sm" data-t="addLine">+ Ligne</button>
+        <button id="btnBulk" class="btn btn-sm btn-ghost" data-t="bulk" title="Coller plusieurs lignes">Coller (TSV)</button>
+      </div>
+      <div id="linesWrap" class="lines"></div>
+      <textarea id="bulkBox" class="in in-area hidden" rows="4" placeholder="Développement web&#9;40&#9;55&#10;Maintenance&#9;1&#9;300"></textarea>
+
+      <div class="two-col bottom">
+        <div>
+          <label class="field"><span data-t="notes">Notes / conditions</span><textarea id="notes" class="in in-area" rows="3"></textarea></label>
+          <label class="field"><span data-t="payLink">Lien de paiement (Polar / Lemon Squeezy / PayPal / virement)</span><input id="payLink" class="in" placeholder="https://buy.polar.sh/..."></label>
+        </div>
+        <div class="totals" id="totalsBox"></div>
+      </div>
+
+      <div class="actions">
+        <button id="btnPdf" class="btn btn-primary" data-t="genPdf">Télécharger le PDF</button>
+        <button id="btnPrint" class="btn" data-t="print">Imprimer / PDF</button>
+        <button id="btnSave" class="btn" data-t="save">Enregistrer</button>
+        <button id="btnSend" class="btn btn-ghost" data-t="sendMail">Envoyer par email</button>
+      </div>
+    </div>
+
+    <aside class="panel preview-panel">
+      <h2 class="panel-title" data-t="preview">Aperçu</h2>
+      <div class="preview-scroll"><iframe id="previewFrame" title="Aperçu"></iframe></div>
+      <button id="btnFullscreen" class="btn btn-ghost btn-xs" data-t="zoom">Plein écran</button>
+    </aside>
+
+  </div>
+</section>
+
+<!-- ============================ PROFILE VIEW ============================ -->
+<section id="view-profile" class="view">
+  <div class="narrow">
+    <h1 data-t="profileTitle">Mon profil</h1>
+    <p class="muted" data-t="profileNote">Rempli une fois, réutilisé sur tous vos documents. Stocké localement.</p>
+    <div class="panel">
+      <div class="two-col">
+        <label class="field"><span data-t="fLegalName">Nom / Raison sociale</span><input class="in" data-pf="legalName"></label>
+        <label class="field"><span data-t="fOwner">Nom de l'exploitant</span><input class="in" data-pf="owner"></label>
+        <label class="field"><span data-t="fAddress">Adresse</span><input class="in" data-pf="address"></label>
+        <label class="field"><span data-t="fZipCity">CP / Ville</span><input class="in" data-pf="city"></label>
+        <label class="field"><span data-t="fCountry">Pays</span><input class="in" data-pf="country"></label>
+        <label class="field"><span data-t="fEmail">Email</span><input class="in" data-pf="email"></label>
+        <label class="field"><span data-t="fPhone">Téléphone</span><input class="in" data-pf="phone"></label>
+        <label class="field"><span data-t="fSite">Site web</span><input class="in" data-pf="website"></label>
+        <label class="field"><span data-t="fMF">Matricule fiscal</span><input class="in" data-pf="matricule"></label>
+        <label class="field"><span data-t="fRC">Registre de commerce</span><input class="in" data-pf="rne"></label>
+        <label class="field"><span data-t="fVAT">N° TVA</span><input class="in" data-pf="vatNumber"></label>
+        <label class="field"><span data-t="fRib">RIB / IBAN / agence</span><input class="in" data-pf="rib"></label>
+        <label class="field"><span data-t="fBank">Banque</span><input class="in" data-pf="bank"></label>
+        <label class="field"><span data-t="fPaypal">PayPal / Wise / Payoneer</span><input class="in" data-pf="paypal"></label>
+        <label class="field" id="fAedWrap"><span data-t="fAedRate">Taux 1 EUR → AED (factures aux EAU)</span><input class="in" data-pf="aedRate" inputmode="decimal" placeholder="4,03"><small class="hint" data-t="fAedHint">La TVA doit être exprimée en AED sur une facture émirienne, même si vous facturez en euros. Saisi à la main : l'outil ne va chercher aucun cours sur Internet.</small></label>
+      </div>
+      <label class="field"><span data-t="fTerms">Conditions par défaut</span><textarea class="in in-area" data-pf="terms" rows="4"></textarea></label>
+      <button id="btnProfileSave" class="btn btn-primary" data-t="save">Enregistrer</button>
+    </div>
+    <div class="panel">
+      <h2 class="panel-title" data-t="dataTitle">Sauvegarde des données</h2>
+      <p class="muted" data-t="dataNote">Exportez un fichier JSON pour transférer votre profil, votre archive et votre compteur vers un autre poste.</p>
+      <button id="btnExportJson" class="btn" data-t="exportJson">Exporter (.json)</button>
+      <label class="btn" data-t="importJson"><input type="file" id="importJson" accept="application/json" hidden>Importer (.json)</label>
+      <button id="btnWipe" class="btn btn-danger" data-t="wipe">Effacer toutes les données</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ ARCHIVE VIEW ============================ -->
+<section id="view-archive" class="view">
+  <div class="wide">
+    <div class="arch-head">
+      <h1 data-t="archiveTitle">Archive</h1>
+      <div>
+        <input id="archSearch" class="in" placeholder="Rechercher…" style="width:220px">
+        <button id="btnArchExport" class="btn btn-sm" data-t="exportCsv">Export CSV</button>
+        <button id="btnArchIcsv" class="btn btn-sm" data-t="exportIcsv">Export iCSV (comptable)</button>
+      </div>
+    </div>
+    <div class="panel table-wrap">
+      <table class="table" id="archTable">
+        <thead><tr>
+          <th>#</th><th data-t="type">Type</th><th data-t="date">Date</th><th data-t="client2">Client</th>
+          <th class="num" data-t="total">Total TTC</th><th data-t="status">Statut</th><th></th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+      <p id="archEmpty" class="muted center pad" data-t="archEmpty">Aucun document. Enregistrez votre premier depuis l'onglet Document.</p>
+    </div>
+    <div class="panel">
+      <h2 class="panel-title" data-t="clientsTitle">Clients récurrents</h2>
+      <div id="clientsList" class="chips"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ PRO VIEW ============================ -->
+<section id="view-pro" class="view">
+  <div class="narrow">
+    <h1>Facturly <span class="pro-word">Pro</span></h1>
+    <p class="lede" data-t="proLede">Paiement unique. Pas d'abonnement. Fonctionne hors-ligne, à vie.</p>
+    <div class="price-grid">
+      <div class="price-card">
+        <div class="pc-name">Pro</div>
+        <div class="pc-price">29 €</div>
+        <ul>
+          <li data-t="p1">Documents illimités + archive sans limite</li>
+          <li data-t="p2">Modèles Modern &amp; Minimal</li>
+          <li data-t="p3">Sans mention « généré avec Facturly »</li>
+          <li data-t="p4">Devis → facture en 1 clic</li>
+          <li data-t="p5">Rappel de paiement (texte prêt à envoyer)</li>
+          <li data-t="p6">Multi-devises &amp; taux de change enregistrés</li>
+          <li data-t="p7">Relances automatiques (texte J+7 / J+15 / J+30)</li>
+        </ul>
+        <a class="btn btn-primary block" data-buy="pro" target="_blank" rel="noopener"
+           href="mailto:majed.benmansour@proton.me?subject=%5BFacturly%5D%20Licence%20Pro">Acheter Pro — 29 €</a>
+      </div>
+      <div class="price-card featured">
+        <div class="pc-name">Agence <span class="badge" data-t="best">le plus rentable</span></div>
+        <div class="pc-price">99 €</div>
+        <ul>
+          <li data-t="a1">Tout le plan Pro, jusqu'à 5 utilisateurs</li>
+          <li data-t="a2">Logo &amp; nom personnalisés sur les factures</li>
+          <li data-t="a3">Pack de 20 modèles de devis/lignes</li>
+          <li data-t="a4">Export comptable iCSV par client</li>
+          <li data-t="a5">Droit de le fournir à vos clients finaux</li>
+        </ul>
+        <a class="btn btn-primary block" data-buy="team" target="_blank" rel="noopener"
+           href="mailto:majed.benmansour@proton.me?subject=%5BFacturly%5D%20Licence%20Pro">Acheter Agence — 99 €</a>
+      </div>
+      <p class="muted" data-buy-note hidden style="margin:10px 2px 0"></p>
+    </div>
+    <div class="panel">
+      <h2 class="panel-title" data-t="activate">Activer ma licence</h2>
+      <p class="muted" data-t="activateNote">Clé reçue par email après achat (format FACT-XXXX-XXXX-XXXX). Elle est stockée dans ce navigateur uniquement, aucune vérification en ligne.</p>
+      <div class="row2">
+        <input id="licenseKey" class="in" placeholder="FACT-....">
+        <button id="btnActivate" class="btn btn-primary" data-t="activateBtn">Activer</button>
+      </div>
+      <div id="licenseMsg" class="hint"></div>
+      <div class="hint" style="margin-top:12px">
+        <b>Code appareil de ce poste</b> — envoyez-le moi après achat pour recevoir votre clé :
+        <button id="devCode" class="btn btn-ghost btn-sm" style="font-family:ui-monospace,monospace;letter-spacing:.08em">—</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<div id="modal" class="modal hidden">
+  <div class="modal-box">
+    <div class="modal-head"><strong id="modalTitle"></strong><button class="btn btn-ghost btn-xs" id="modalClose">✕</button></div>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script src="store.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
