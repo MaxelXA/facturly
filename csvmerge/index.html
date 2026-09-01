@@ -59,7 +59,14 @@ a{color:var(--acc)}
     <ul class="flist" id="flist"></ul>
     <div class="row" style="margin-top:10px">
       <button class="btn s" id="pasteBtn">Coller des données</button>
+      <button class="btn s" id="demoBtn" title="deux fichiers réalistes, sans rien télécharger">Charger un exemple</button>
       <button class="btn s" id="clearBtn">Tout vider</button>
+      <p class="note" style="margin:9px 0 0" id="demoNote">Pas de CSV sous la main&nbsp;? <b>Charger un exemple</b>
+      dépose deux fichiers réalistes — un point-virgule dans une cellule, un doublon, une date,
+      une colonne absente de l'autre fichier, un retour à la ligne entre guillemets — exactement
+      ce qui casse un copier-coller dans Excel. Puis <b>Télécharger le CSV</b> pour voir le résultat.
+      Ces deux fichiers servent aussi à essayer <a href="../fusion-csv-cli.html">la version ligne de commande</a>&nbsp;:
+      <button class="link" id="samplesBtn" style="border:0;background:none;color:var(--acc);cursor:pointer;font:inherit;text-decoration:underline;padding:0">les télécharger</button>.</p>
     </div>
 
     <h2>2 · Lecture</h2>
@@ -224,7 +231,7 @@ function readFile(f){ return new Promise(function(res){
 
 function refreshList(){
   $("flist").innerHTML=files.map(function(f,i){
-    return '<li><b title="'+esc(f.name)+'">'+esc(f.name)+'</b><span class="note">'+f.rows.length+'</span>'+
+    return '<li><b title="'+esc(f.name)+'">'+esc(f.name)+'</b><span class="note">'+(f.rows?f.rows.length+" lignes":"lecture…")+'</span>'+
     '<button class="btn s" data-x="'+i+'">×</button></li>';}).join("");
   $$("#flist [data-x]").forEach(function(b){b.onclick=function(){files.splice(+b.dataset.x,1);refreshList();};});
 }
@@ -263,6 +270,7 @@ function run(){
   if(!files.length){alert("Ajoutez au moins un fichier.");return;}
   var t0=performance.now();
   analyze().then(function(frames){
+    frames.forEach(function(fr,i){ if(files[i]) files[i].rows=fr.rows; });
     var hs=buildHeaders(frames), mode=vl("mode"), keepDup=!ck("dedup"), keepLast=ck("dedupKeep");
     var seen={}, stats={in:0,empty:0,dup:0,fixed:0};
     var acc=[];
@@ -287,6 +295,7 @@ function run(){
     }
     out={headers:hs,rows:acc};
     render();
+    refreshList();          // le compte de lignes par fichier n'est connu qu'ici
     var dt=performance.now()-t0;
     $("time").textContent=dt.toFixed(0)+" ms";
     $("stats").innerHTML='<div class="stat"><span>Lignes lues</span><b>'+stats.in+'</b></div>'+
@@ -336,6 +345,33 @@ document.getElementById("dlXls").onclick=function(){ if(!out.rows.length)return;
 document.getElementById("copyBtn").onclick=function(){ if(!out.rows.length)return;
   var s=serialize(); (navigator.clipboard?navigator.clipboard.writeText(s):Promise.reject()).then(function(){toast("Copié");},function(){
     var t=document.createElement("textarea");t.value=s;document.body.appendChild(t);t.select();document.execCommand("copy");t.remove();toast("Copié");});};
+/* L'exemple passe par add(), le VRAI chemin d'un fichier déposé (FileReader → analyze → run).
+   Un démo qui recalculerait lui-même son tableau ment sur l'outil : elle doit donc être
+   testée en comptant les lignes du tableau, pas en lisant une constante. */
+var DEMO=[
+ ["paie-exemple.csv",
+  "matricule;nom;salaire_brut;date_entree\n"+
+  "P-01;Amri;1 200,50;03/01/2022\n"+
+  "P-02;Ben Salah;\"2 500,00\";17/09/2019\n"+
+  "P-03;Zaïed;3 100,00;28/02/2024\n"+
+  "P-02;Ben Salah;\"2 500,00\";17/09/2019\n"],
+ ["primes-exemple.csv",
+  "matricule;prime;note\n"+
+  "P-01;150;\"avancement; dossier 2025\"\n"+
+  "P-03;400;\"ligne 1\n ligne 2 dans la même cellule\"\n"+
+  "P-04;900;embauche prévue le mois prochain\n"]];
+document.getElementById("demoBtn").onclick=function(){
+  /* les réglages AVANT add() : c'est run(), appelé par add(), qui les lit */
+  $("mode").value="union"; $("addSource").checked=true; $("dedup").checked=true;
+  $("numnorm").checked=true; $("datnorm").checked=true; $("lowerHeader").checked=true;
+  files=[]; out={headers:[],rows:[]};
+  add(DEMO.map(function(x){ return new File([x[1]],x[0],{type:"text/csv"}); }));
+  toast("Deux fichiers d'exemple chargés — 7 lignes lues, 1 doublon retiré.");
+};
+document.getElementById("samplesBtn").onclick=function(){
+  DEMO.forEach(function(p){ dl(p[0],p[1]); });
+  toast("Deux CSV écrits dans vos téléchargements.");
+};
 document.getElementById("clearBtn").onclick=function(){files=[];out={headers:[],rows:[]};refreshList();render();$("stats").textContent="—";};
 document.getElementById("pasteBtn").onclick=function(){
   var s=prompt("Collez vos lignes (CSV ou TSV) :"); if(!s)return;
@@ -357,7 +393,7 @@ $("file").addEventListener("change",function(e){add(e.target.files);});
 function add(list){
   Array.prototype.slice.call(list).forEach(function(f){
     if(/\.xlsx?$/i.test(f.name)){ alert("Excel : enregistrez-le d'abord en CSV (Fichier → Enregistrer sous → CSV), ou utilisez le CLI, qui lit les .xlsx directement (page « Version CLI » en haut de l'écran)."); return; }
-    readFile(f).then(function(r){ files.push({name:r.name,text:r.text}); refreshList(); run(); });
+    readFile(f).then(function(r){ files.push({name:r.name,text:r.text,rows:null}); refreshList(); run(); });
   });
 }
 function toast(m){ var t=document.createElement("div"); t.textContent=m;
