@@ -3,8 +3,11 @@
 Un générateur de factures et de devis pour les indépendants qui facturent en **TND, MAD, DZD, EGP, EUR, AED, SAR**, plus une fusionneuse de gros fichiers CSV pour les comptables. Aucun serveur, aucun compte, aucune télémétrie : l'outil tourne dans le navigateur et tes données restent sur ton poste.
 
 **Outil gratuit (en ligne, sans compte)** : <https://maxelxa.github.io/facturly/app/>
+
 **Fusionneuse CSV gratuite** : <https://maxelxa.github.io/facturly/csvmerge/>
+
 **Modèle de facture à imprimer** : <https://maxelxa.github.io/facturly/modele-facture.html>
+
 **Site / services** : <https://maxelxa.github.io/facturly/>
 
 ## Ce que la version gratuite fait déjà
