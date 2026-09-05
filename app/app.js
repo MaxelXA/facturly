@@ -366,7 +366,7 @@ function renderPreview(){
      +'</h4><div style="font-size:9px;line-height:1.55;color:#5b6478">'+legal.map(esc).join("<br>")+"</div></div></div>"
    +'<div class="foot"><div>'+(bank?"<b>"+t("bankDetails")+"</b><br>"+esc(bank):"")+(ident?"<br>"+esc(ident):"")
      +"</div><div class='right'>"+esc(t("thankYou"))+"</div></div>"
-   +(isPro()?"":"<div class='wm'>"+esc(t("watermark"))+" — facturly.app</div>")
+   +(isPro()?"":"<div class='wm'>"+esc(t("watermark"))+"</div>")
    +"</div></body></html>";
   $("#previewFrame").srcdoc=html;
   window.__fxHtml=html;
@@ -527,7 +527,7 @@ function pdfViaJsPDF(){
   if(foot.length>4)foot=foot.slice(0,4);   /* la place manque sous le tableau : on garde les mentions qui engagent */
   if(foot.length)doc.text(foot.map(T_).join("   ·   "),M,fy+1,{lineHeightFactor:1.45,maxWidth:W-2*M});
   if(!isPro()){doc.setFontSize(7.2);doc.setTextColor(170,178,192);
-    doc.text(T_(t("watermark"))+" — facturly.app",W/2,290,{align:"center"});}
+    doc.text(T_(t("watermark")),W/2,290,{align:"center"});}
   var safe=String(d.buyer||"client").split(/\r?\n/)[0].replace(/[^\w\u0600-\u06FF-]+/g,"").slice(0,26)||"client";
   doc.save(({facture:"facture",devis:"devis",avoir:"avoir"}[d.type])+"-"+(d.number||"x")+"-"+safe+".pdf");
   return true;}
